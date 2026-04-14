@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import text.ExpenseTestView
 import java.sql.Date
 import java.time.temporal.TemporalAmount
 
@@ -60,8 +61,8 @@ fun HomeS(){
             )
             {
                 Column() {
-                    Text(text = "Hello!", fontSize = 16.sp, color = Color.White)
-                    Text(
+                    ExpenseTestView(text = "Hello!", fontSize = 16.sp, color = Color.White)
+                    ExpenseTestView(
                         text = "EasyBudget", fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -103,8 +104,8 @@ fun CardThing(modifier: Modifier){
     ) {
         Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
             Column(modifier = Modifier.align(Alignment.CenterStart)) {
-                Text(text = "Total Balance", fontSize = 16.sp, color = Color.White)
-                Text(
+                ExpenseTestView(text = "Total Balance", fontSize = 16.sp, color = Color.White)
+                ExpenseTestView(
                     text = "₹ 100,000",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -141,8 +142,8 @@ fun CardThing(modifier: Modifier){
 fun ExpenseList(modifier: Modifier){
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
         Box(modifier = Modifier.fillMaxWidth()){
-            Text(text = "Recent Transactions", fontSize = 20.sp)
-            Text(
+            ExpenseTestView(text = "Recent Transactions", fontSize = 20.sp)
+            ExpenseTestView(
                 text = "See All",
                 fontSize = 16.sp,
                 modifier = Modifier.align(Alignment.CenterEnd)
@@ -184,9 +185,9 @@ fun CardRowThing(modifier: Modifier, title: String,amount: String,image: Int){
         Row() {
             Image(painter = painterResource(id = image), contentDescription = null)
             Spacer(modifier= Modifier.size(8.dp))
-            Text(text = title, fontSize = 16.sp, color = Color.White)
+            ExpenseTestView(text = title, fontSize = 16.sp, color = Color.White)
         }
-        Text(text = amount, fontSize = 20.sp, color = Color.White)
+        ExpenseTestView(text = amount, fontSize = 20.sp, color = Color.White)
     }
 }
 
@@ -198,12 +199,13 @@ fun ExpenseItem(title: String, amount: String,icon: Int, date: String, color: Co
                 modifier = Modifier.size(50.dp))
             Spacer(modifier = Modifier.size(8.dp))
             Column() {
-                Text(text = title, fontSize = 16.sp)
-                Text(text = date, fontSize = 12.sp)
+                ExpenseTestView(text = title, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                ExpenseTestView(text = date, fontSize = 12.sp)
             }
         }
-        Text(
-            text = amount, fontSize = 20.sp, modifier = Modifier.align(Alignment.CenterEnd), color = color
+        ExpenseTestView(
+            text = amount, fontSize = 20.sp, modifier = Modifier.align(Alignment.CenterEnd), color = color,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }
