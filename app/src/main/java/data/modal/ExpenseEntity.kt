@@ -1,10 +1,12 @@
 package data.modal
 
 import androidx.room.Entity
-import java.time.temporal.TemporalAmount
+import androidx.room.PrimaryKey
+
 @Entity(tableName = "expense_table")
 data class ExpenseEntity(
-    val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int? = null,
     val title: String,
     val amount: Double,
     val date: Long,
