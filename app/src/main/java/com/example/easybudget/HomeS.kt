@@ -15,14 +15,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
@@ -32,12 +36,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import data.modal.ExpenseEntity
 import text.ExpenseTestView
+import viewmodel.HomeViewModel
+import viewmodel.HomeViewModelFactory
 import java.sql.Date
 import java.time.temporal.TemporalAmount
 
 @Composable
 fun HomeS(){
+    val viewModel : HomeViewModel = HomeViewModelFactory(LocalContext.current).create(HomeViewModel::class.java)
     Surface(
         modifier= Modifier.fillMaxSize()
     ) {
@@ -74,12 +82,16 @@ fun HomeS(){
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
             }
+            val state = viewModel.expenses.collectAsState(initial = emptyList())
+            val balance = viewModel.getBalance(state.value)
+            val income = viewModel.getTotalIncome(state.value)
+            val expense = viewModel.getTotalExpense(state.value)
             CardThing(modifier = Modifier
                 .constrainAs(card){
                     top.linkTo(nameRow.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }
+                }, balance, income, expense
             )
             ExpenseList(modifier = Modifier.fillMaxWidth().constrainAs(list){
                 top.linkTo(card.bottom)
@@ -87,13 +99,13 @@ fun HomeS(){
                 end.linkTo(parent.end)
                 bottom.linkTo(parent.bottom)
                 height = Dimension.fillToConstraints
-            }
+            }, list = state.value, viewModel
             )
         }
     }
 }
 @Composable
-fun CardThing(modifier: Modifier){
+fun CardThing(modifier: Modifier, balance: String, income: String, expense: String){
     Column(modifier = modifier
         .padding(16.dp)
         .fillMaxWidth()
@@ -106,7 +118,7 @@ fun CardThing(modifier: Modifier){
             Column(modifier = Modifier.align(Alignment.CenterStart)) {
                 ExpenseTestView(text = "Total Balance", fontSize = 16.sp, color = Color.White)
                 ExpenseTestView(
-                    text = "₹ 100,000",
+                    text = balance,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -124,14 +136,15 @@ fun CardThing(modifier: Modifier){
             CardRowThing(
                 modifier =Modifier.align(Alignment.CenterStart),
                 title = "Income",
-                amount = "₹ 10,000",
+                amount = income,
                 image =  R.drawable.income,
 
             )
+            Spacer(modifier = Modifier.size(16.dp))
             CardRowThing(
                 modifier=Modifier.align(Alignment.CenterEnd),
                 title = "Expense",
-                amount = "₹ 5,565",
+                amount = expense,
                 image = R.drawable.expense
             )
         }
@@ -139,44 +152,27 @@ fun CardThing(modifier: Modifier){
 }
 
 @Composable
-fun ExpenseList(modifier: Modifier){
-    Column(modifier = modifier.padding(horizontal = 16.dp)) {
-        Box(modifier = Modifier.fillMaxWidth()){
-            ExpenseTestView(text = "Recent Transactions", fontSize = 20.sp)
-            ExpenseTestView(
-                text = "See All",
-                fontSize = 16.sp,
-                modifier = Modifier.align(Alignment.CenterEnd)
+fun ExpenseList(modifier: Modifier, list: List<ExpenseEntity>, viewModel: HomeViewModel){
+    LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
+        item {
+            Box(modifier = Modifier.fillMaxWidth()){
+                ExpenseTestView(text = "Recent Transactions", fontSize = 20.sp)
+                ExpenseTestView(
+                    text = "See All",
+                    fontSize = 16.sp,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
+        }
+        items(list){ item->
+            ExpenseItem(
+                title = item.title,
+                amount = item.amount.toString(),
+                icon = viewModel.getitemlogo(item),
+                date = item.date.toString(),
+                color = if(item.type=="Income") Color.Green else Color.Red,
             )
         }
-        ExpenseItem(
-            title = "Starbucks",
-            amount = "- ₹ 100.00",
-            icon = R.drawable.ic_starbucks,
-            date = "Today",
-            color = Color.Red
-        )
-        ExpenseItem(
-            title = "Starbucks",
-            amount = "- ₹ 100.00",
-            icon = R.drawable.ic_starbucks,
-            date = "Today",
-            color = Color.Red
-        )
-        ExpenseItem(
-            title = "Starbucks",
-            amount = "- ₹ 100.00",
-            icon = R.drawable.ic_starbucks,
-            date = "Today",
-            color = Color.Red
-        )
-        ExpenseItem(
-            title = "Starbucks",
-            amount = "- ₹ 100.00",
-            icon = R.drawable.ic_starbucks,
-            date = "Today",
-            color = Color.Red
-        )
     }
 }
 @Composable
