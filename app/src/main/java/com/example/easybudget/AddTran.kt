@@ -1,7 +1,5 @@
 package com.example.easybudget
 
-import android.R.attr.enabled
-import android.R.attr.type
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -33,22 +30,32 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.easybudget.ui.theme.Utils
+import data.modal.ExpenseEntity
+import kotlinx.coroutines.launch
 import text.ExpenseTestView
+import viewmodel.AddTranviewmodel
+import viewmodel.AddTranviewmodelFactory
 
 @Composable
-fun AddTran(){
+fun AddTran(navController: NavController){
+    val viewModel = AddTranviewmodelFactory(LocalContext.current).create(AddTranviewmodel::class.java)
+    val coroutineScope = rememberCoroutineScope()
     Surface(modifier= Modifier.fillMaxSize()) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
             val (nameRow, list, card, topBar) = createRefs()
@@ -85,12 +92,18 @@ fun AddTran(){
                 top.linkTo(nameRow.bottom)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-            })
+            },onAddExpenseClick = {
+                coroutineScope.launch {
+                   if(viewModel.addExpense(it)){
+                       navController.popBackStack()
+                   }
+                }
+            }  )
         }
     }
 }
 @Composable
-fun Forms(modifier: Modifier){
+fun Forms(modifier: Modifier, onAddExpenseClick:(model: ExpenseEntity )-> Unit ){
     val name = remember {
         mutableStateOf("")
     }
@@ -119,34 +132,46 @@ fun Forms(modifier: Modifier){
         .verticalScroll(rememberScrollState()))
     {
         ExpenseTestView(text = "Name", fontSize = 14.sp)
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = Modifier.size(4.dp))
         OutlinedTextField(value = name.value, onValueChange = {
             name.value = it
         }, modifier = Modifier.fillMaxWidth())
-        ExpenseTestView(text = "Amount", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(8.dp))
+
+
+        ExpenseTestView(text = "Amount", fontSize = 14.sp)
+        Spacer(modifier = Modifier.size(4.dp))
         OutlinedTextField(value = amount.value, onValueChange = {
             amount.value = it
         }, modifier = Modifier.fillMaxWidth())
-
+        Spacer(modifier = Modifier.size(8.dp))
 
         ExpenseTestView(text = "Date", fontSize = 14.sp)
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = Modifier.size(4.dp))
         OutlinedTextField(value = if(date.value==0L)"" else Utils.fromatlongtoreadable(date.value), onValueChange = {
             {}
         }, modifier = Modifier.fillMaxWidth().clickable{dateDialogVisibility.value=true}, enabled = false)
+        Spacer(modifier = Modifier.size(8.dp))
+
 
         ExpenseTestView(text = "Category", fontSize = 14.sp)
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = Modifier.size(4.dp))
         ExpenseDropDown(listOf("Groceries","Spotify","Mobile recharge / Internet","Salary","Refunds"), onItemSelect = {category.value=it})
+        Spacer(modifier = Modifier.size(8.dp))
 
         ExpenseTestView(text = "Type", fontSize = 14.sp)
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = Modifier.size(4.dp))
         ExpenseDropDown(listOf("Expense","Income"), onItemSelect = {type.value=it})
+        Spacer(modifier = Modifier.size(8.dp))
 
-        Button(onClick = {},
+        Button(onClick = {
+            val model = ExpenseEntity(
+                null,name.value,amount.value.toDoubleOrNull()?:0.0, date.value,category.value,type.value
+            )
+            onAddExpenseClick(model)
+        },
             modifier = Modifier
-                .clip(RoundedCornerShape(2.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .fillMaxWidth()){
             ExpenseTestView(text = "Add Expense", fontSize = 14.sp, color = Color.White)
         }
@@ -169,12 +194,12 @@ fun Expensedatepart(
     val selectedDate = datePicker.selectedDateMillis ?: 0L
     DatePickerDialog({onDismiss()},
         { TextButton(onClick = {onDateChange(selectedDate)}){
-            Text(text = "OK")
+            ExpenseTestView(text = "OK")
         }
         },
         dismissButton = {
             TextButton(onClick = {onDateChange(selectedDate)}) {
-                Text(text = "Cancel")
+                ExpenseTestView(text = "Cancel")
             }
         }
         ) {
@@ -211,5 +236,5 @@ fun ExpenseDropDown(listofitems: List<String>, onItemSelect: (item:String) -> Un
 @Composable
 @Preview(showBackground = true)
 fun AddTranPreview(){
-    AddTran()
+    AddTran(rememberNavController())
 }

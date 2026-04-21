@@ -6,6 +6,7 @@ import android.media.Image
 import android.text.Layout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import data.modal.ExpenseEntity
 import text.ExpenseTestView
 import viewmodel.HomeViewModel
@@ -44,13 +48,13 @@ import java.sql.Date
 import java.time.temporal.TemporalAmount
 
 @Composable
-fun HomeS(){
+fun HomeS(navController: NavController){
     val viewModel : HomeViewModel = HomeViewModelFactory(LocalContext.current).create(HomeViewModel::class.java)
     Surface(
         modifier= Modifier.fillMaxSize()
     ) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-            val (nameRow, list , card, topBar) = createRefs()
+            val (nameRow, list , card, topBar,add) = createRefs()
             Image(painter = painterResource(id=R.drawable.rectangle_9),
                 null,
                 modifier = Modifier.constrainAs(topBar){
@@ -101,6 +105,13 @@ fun HomeS(){
                 height = Dimension.fillToConstraints
             }, list = state.value, viewModel
             )
+            Image(painter =painterResource(R.drawable.addcash) , null, modifier = Modifier.constrainAs(add){
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+
+            }.size(48.dp).clip(CircleShape).clickable{
+                navController.navigate("add")
+            })
         }
     }
 }
@@ -208,5 +219,5 @@ fun ExpenseItem(title: String, amount: String,icon: Int, date: String, color: Co
 @Composable
 @Preview(showBackground = true)
 fun PreviewHomeS(){
-    HomeS()
+    HomeS(rememberNavController())
 }
