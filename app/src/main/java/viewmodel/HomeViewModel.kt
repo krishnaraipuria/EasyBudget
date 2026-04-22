@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Dao
 import com.example.easybudget.R
+import com.example.easybudget.ui.theme.Utils
 import data.ExpenseDataBase
 import data.dao.ExpenseDao
 import data.modal.ExpenseEntity
@@ -23,7 +24,7 @@ class HomeViewModel(dao: ExpenseDao) : ViewModel(){
                 total-=it.amount
             }
         }
-        return "₹ ${total}"
+        return "₹ ${Utils.formatToDecimal(total)}"
     }
 
     fun getTotalExpense(list: List<ExpenseEntity>): String{
@@ -33,7 +34,7 @@ class HomeViewModel(dao: ExpenseDao) : ViewModel(){
                 total+= it.amount
             }
         }
-        return "₹ ${total}"
+        return "₹ ${Utils.formatToDecimal(total)}"
     }
 
     fun getTotalIncome(list: List<ExpenseEntity>): String{
@@ -43,7 +44,7 @@ class HomeViewModel(dao: ExpenseDao) : ViewModel(){
                 total+= it.amount
             }
         }
-        return "₹ ${total}"
+        return "₹ ${Utils.formatToDecimal(total)}"
     }
     fun getitemlogo(item: ExpenseEntity): Int {
         if(item.category == "Income"){

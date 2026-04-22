@@ -40,6 +40,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.easybudget.ui.theme.Utils
 import data.modal.ExpenseEntity
 import text.ExpenseTestView
 import viewmodel.HomeViewModel
@@ -180,7 +181,7 @@ fun ExpenseList(modifier: Modifier, list: List<ExpenseEntity>, viewModel: HomeVi
                 title = item.title,
                 amount = item.amount.toString(),
                 icon = viewModel.getitemlogo(item),
-                date = item.date.toString(),
+                date = Utils.fromatlongtoreadable(item.date),
                 color = if(item.type=="Income") Color.Green else Color.Red,
             )
         }

@@ -9,4 +9,8 @@ object Utils {
         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         return formatter.format(Date(dateInMillis))
     }
+
+    fun formattodecimal(value: Double): String {
+        return String.format("%.2f", value)
+    }
 }

@@ -22,6 +22,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -148,9 +149,12 @@ fun Forms(modifier: Modifier, onAddExpenseClick:(model: ExpenseEntity )-> Unit )
 
         ExpenseTestView(text = "Date", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        OutlinedTextField(value = if(date.value==0L)"" else Utils.fromatlongtoreadable(date.value), onValueChange = {
+        OutlinedTextField(value = if(date.value==0L)"" else Utils.formatLongToReadable(date.value), onValueChange = {
             {}
-        }, modifier = Modifier.fillMaxWidth().clickable{dateDialogVisibility.value=true}, enabled = false)
+        }, modifier = Modifier.fillMaxWidth().clickable{dateDialogVisibility.value=true}, enabled = false, colors = OutlinedTextFieldDefaults.colors(
+            disabledBorderColor = Color.Black,
+            disabledTextColor = Color.Black
+        ))
         Spacer(modifier = Modifier.size(8.dp))
 
 
