@@ -181,7 +181,7 @@ fun ExpenseList(modifier: Modifier, list: List<ExpenseEntity>, viewModel: HomeVi
                 title = item.title,
                 amount = item.amount.toString(),
                 icon = viewModel.getitemlogo(item),
-                date = Utils.fromatlongtoreadable(item.date),
+                date = Utils.formatLongToReadable(item.date),
                 color = if(item.type=="Income") Color.Green else Color.Red,
             )
         }
