@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,8 +27,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.easybudget.ui.theme.Utils
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
 import text.ExpenseTestView
@@ -34,6 +41,7 @@ import viewmodel.StatsViewModel
 import viewmodel.StatsViewModelFactory
 import java.security.KeyStore
 import kotlin.enums.EnumEntries
+import androidx.core.graphics.toColorInt
 
 @Composable
 fun StatsS(navController: NavController){
@@ -59,9 +67,11 @@ fun StatsS(navController: NavController){
     }) {
         val viewModel = StatsViewModelFactory(navController.context).create(StatsViewModel::class.java)
         val dataState = viewModel.entries.collectAsState(emptyList())
+        val topExpense = viewModel.topEntries.collectAsState(initial = emptyList())
         Column(modifier = Modifier.padding(it)) {
             val entries = viewModel.getEntriesForChart(dataState.value)
             LineChart(entries = entries)
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -72,15 +82,39 @@ fun LineChart(entries: List<Entry>){
     AndroidView(factory = {
         val view = LayoutInflater.from(context).inflate(R.layout.statslinechart,null)
         view
-    }, modifier = Modifier){ view->
+    }, modifier = Modifier.fillMaxWidth().height(250.dp)){ view->
         val lineChart = view.findViewById<LineChart>(R.id.lineChart)
 
         val dateSet = LineDataSet(entries, "Expense").apply{
-            color = Color.Black.toArgb()
-            valueTextColor = Color.Black.toArgb()
+            color = "#FF2F7E79".toColorInt()
+            valueTextColor = android.graphics.Color.BLACK
+            lineWidth = 3f
+            axisDependency = YAxis.AxisDependency.RIGHT
+            setDrawFilled(true)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
             valueTextSize = 12f
+            valueTextColor = "#FF2F7E79".toColorInt()
+            val drawable = ContextCompat.getDrawable(context, R.drawable.char_gradient)
+            drawable?.let {
+                fillDrawable = it
+            }
         }
+        lineChart.xAxis.valueFormatter =
+            object : com.github.mikephil.charting.formatter.ValueFormatter(){
+                override fun getFormattedValue(value: Float): String{
+                    return Utils.formatLongChart(value.toLong())
+                }
+            }
+
         lineChart.data = com.github.mikephil.charting.data.LineData(dateSet)
+        lineChart.axisLeft.isEnabled=false
+        lineChart.axisRight.isEnabled=false;
+        lineChart.axisRight.setDrawGridLines(false)
+        lineChart.axisLeft.setDrawGridLines(false)
+        lineChart.xAxis.setDrawGridLines(false)
+        lineChart.xAxis.setDrawAxisLine(false)
+        lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+
         lineChart.invalidate()
     }
 }

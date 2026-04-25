@@ -11,6 +11,11 @@ object Utils {
         return formatter.format(Date(dateInMillis))
     }
 
+    fun formatLongChart(dateInMillis: Long): String {
+        val formatter = SimpleDateFormat("dd-MMM", Locale.getDefault())
+        return formatter.format(Date(dateInMillis))
+    }
+
     fun formatToDecimal(value: Double): String {
         return String.format(Locale.getDefault(), "%.2f", value)
     }

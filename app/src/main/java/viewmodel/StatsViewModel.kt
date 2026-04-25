@@ -13,7 +13,7 @@ import data.modal.ExpenseSummary
 
 class StatsViewModel(dao: ExpenseDao) : ViewModel() {
     val entries = dao.getAllExpenseByDate()
-
+    val topEntries =dao.getTopExpense()
     fun getEntriesForChart(entries: List<ExpenseSummary>): List<Entry> {
         val list = mutableListOf<Entry>()
         for (entry in entries) {
