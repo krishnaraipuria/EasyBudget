@@ -30,7 +30,6 @@
     <li><strong>UI:</strong> Jetpack Compose</li>
     <li><strong>Architecture:</strong> MVVM</li>
     <li><strong>Database:</strong> Room (SQLite)</li>
-    <li><strong>Dependency Injection:</strong> Dagger Hilt</li>
   </ul>
 
   <h2>🧠 What I Learned</h2>
