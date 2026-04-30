@@ -46,14 +46,6 @@ class HomeViewModel(dao: ExpenseDao) : ViewModel(){
         }
         return "₹ ${Utils.formatToDecimal(total)}"
     }
-    fun getitemlogo(item: ExpenseEntity): Int {
-        if(item.category == "Income"){
-            return R.drawable.income2
-        } else if(item.category == "Starbucks"){
-            return R.drawable.ic_starbucks
-        }
-        return  R.drawable.seaching
-    }
 }
 
 class HomeViewModelFactory(private val context: Context): ViewModelProvider.Factory{

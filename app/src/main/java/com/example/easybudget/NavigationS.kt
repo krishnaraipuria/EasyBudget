@@ -3,6 +3,7 @@ package com.example.easybudget
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -32,8 +33,8 @@ fun NavHostS() {
             NavBottomBar(
                 navController = navController,
                 items = listOf(
-                    NaviItem(route = "homes", icon = R.drawable.group_18),
-                    NaviItem(route = "stats", icon = R.drawable.group_18)
+                    NaviItem(route = "homes", icon = R.drawable.homeicon),
+                    NaviItem(route = "stats", icon = R.drawable.bar_chart_fill_1)
                 )
             )
         }
@@ -85,10 +86,8 @@ fun NavBottomBar(navController: NavController, items: List<NaviItem>) {
                 },
                 alwaysShowLabel = false,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedTextColor = Color.Black,
-                    selectedIconColor = Color.Black,
-                    unselectedTextColor = Color.Gray,
-                    unselectedIconColor = Color.Gray
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
         }

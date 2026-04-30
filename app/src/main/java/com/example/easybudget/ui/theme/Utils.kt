@@ -1,5 +1,7 @@
 package com.example.easybudget.ui.theme
 
+import com.example.easybudget.R
+import data.modal.ExpenseEntity
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -35,5 +37,13 @@ object Utils {
             e.printStackTrace()
         }
         return date.time
+    }
+    fun getitemlogo(item: ExpenseEntity): Int {
+        if(item.category == "Income"){
+            return R.drawable.income2
+        } else if(item.category == "Starbucks"){
+            return R.drawable.ic_starbucks
+        }
+        return  R.drawable.seaching
     }
 }

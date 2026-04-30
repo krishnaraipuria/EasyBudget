@@ -104,9 +104,9 @@ fun HomeS(navController: NavController){
                 end.linkTo(parent.end)
                 bottom.linkTo(parent.bottom)
                 height = Dimension.fillToConstraints
-            }, list = state.value, viewModel
+            }, list = state.value,
             )
-            Image(painter =painterResource(R.drawable.addcash) , null, modifier = Modifier.constrainAs(add){
+            Image(painter =painterResource(R.drawable.group_10) , null, modifier = Modifier.constrainAs(add){
                 bottom.linkTo(parent.bottom)
                 end.linkTo(parent.end)
 
@@ -164,23 +164,28 @@ fun CardThing(modifier: Modifier, balance: String, income: String, expense: Stri
 }
 
 @Composable
-fun ExpenseList(modifier: Modifier, list: List<ExpenseEntity>, viewModel: HomeViewModel){
+fun ExpenseList(modifier: Modifier, list: List<ExpenseEntity>, title: String = "Recent Transactions"){
     LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
         item {
-            Box(modifier = Modifier.fillMaxWidth()){
-                ExpenseTestView(text = "Recent Transactions", fontSize = 20.sp)
-                ExpenseTestView(
-                    text = "See All",
-                    fontSize = 16.sp,
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                )
+            Column() {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    ExpenseTestView(text = title, fontSize = 20.sp)
+                    if (title == "Recent Transactions") {
+                        ExpenseTestView(
+                            text = "See All",
+                            fontSize = 16.sp,
+                            modifier = Modifier.align(Alignment.CenterEnd)
+                        )
+                    }
+                }
             }
         }
         items(list){ item->
+            val icon = Utils.getitemlogo(item)
             ExpenseItem(
                 title = item.title,
                 amount = item.amount.toString(),
-                icon = viewModel.getitemlogo(item),
+                icon = icon!!,
                 date = Utils.formatLongToReadable(item.date),
                 color = if(item.type=="Income") Color.Green else Color.Red,
             )

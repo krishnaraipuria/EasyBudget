@@ -20,6 +20,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -118,17 +119,17 @@ fun Forms(modifier: Modifier, onAddExpenseClick:(model: ExpenseEntity )-> Unit )
         mutableStateOf(false)
     }
     val category= remember {
-        mutableStateOf("")
+        mutableStateOf("Groceries")
     }
     val type= remember {
-        mutableStateOf("")
+        mutableStateOf("Expense")
     }
     Column(modifier = modifier
         .padding(16.dp)
         .fillMaxWidth()
         .shadow(16.dp)
         .clip(RoundedCornerShape(16.dp))
-        .background(Color.White)
+        .background(MaterialTheme.colorScheme.surface)
         .padding(16.dp)
         .verticalScroll(rememberScrollState()))
     {
@@ -152,8 +153,8 @@ fun Forms(modifier: Modifier, onAddExpenseClick:(model: ExpenseEntity )-> Unit )
         OutlinedTextField(value = if(date.value==0L)"" else Utils.formatLongToReadable(date.value), onValueChange = {
             {}
         }, modifier = Modifier.fillMaxWidth().clickable{dateDialogVisibility.value=true}, enabled = false, colors = OutlinedTextFieldDefaults.colors(
-            disabledBorderColor = Color.Black,
-            disabledTextColor = Color.Black
+            disabledBorderColor = MaterialTheme.colorScheme.outline,
+            disabledTextColor = MaterialTheme.colorScheme.onSurface
         ))
         Spacer(modifier = Modifier.size(8.dp))
 
