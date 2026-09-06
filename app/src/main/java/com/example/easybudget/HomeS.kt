@@ -1,9 +1,5 @@
 package com.example.easybudget
 
-import android.graphics.drawable.Icon
-import android.icu.text.CaseMap
-import android.media.Image
-import android.text.Layout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -81,11 +79,23 @@ fun HomeS(navController: NavController){
                         color = Color.White
                     )
                 }
-                Image(
-                    painter = painterResource(id = R.drawable.notification),
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                )
+                Row(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { navController.navigate("assistant") }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.dot1),
+                            contentDescription = "AI Assistant",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    Image(
+                        painter = painterResource(id = R.drawable.notification),
+                        contentDescription = null,
+                    )
+                }
             }
             val state = viewModel.expenses.collectAsState(initial = emptyList())
             val balance = viewModel.getBalance(state.value)
