@@ -61,7 +61,6 @@ fun AIS(navController: NavController) {
                 .padding(padding)
                 .background(Color.White)
         ) {
-            // Chat Messages
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -74,7 +73,6 @@ fun AIS(navController: NavController) {
                 }
             }
 
-            // Input Area
             ChatInputBar(
                 text = inputText,
                 onTextChange = { inputText = it },
@@ -136,19 +134,15 @@ fun ChatInputBar(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Voice Icon
             Icon(
                 painter = painterResource(id = R.drawable.dot1), // Placeholder for voice
                 contentDescription = "Voice",
                 modifier = Modifier
-                    .size(24.dp)
-                    .clickable { /* TODO: Voice input */ },
+                    .size(24.dp),
                 tint = Color.Gray
             )
 
             Spacer(modifier = Modifier.width(12.dp))
-
-            // Text Field
             OutlinedTextField(
                 value = text,
                 onValueChange = onTextChange,
@@ -163,10 +157,7 @@ fun ChatInputBar(
                     unfocusedContainerColor = Color.Transparent
                 )
             )
-
             Spacer(modifier = Modifier.width(12.dp))
-
-            // Send Button
             FloatingActionButton(
                 onClick = onSend,
                 modifier = Modifier.size(48.dp),
