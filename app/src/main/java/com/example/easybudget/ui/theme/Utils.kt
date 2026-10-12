@@ -22,6 +22,7 @@ object Utils {
         return String.format(Locale.getDefault(), "%.2f", value)
     }
 
+    @Suppress("unused")
     fun getMillsFromDate(dateString: String?): Long {
         return getMilliFromDate(dateString)
     }
@@ -38,12 +39,13 @@ object Utils {
         }
         return date.time
     }
+
     fun getitemlogo(item: ExpenseEntity): Int {
-        if(item.category == "Income"){
+        if (item.category == "Income") {
             return R.drawable.income2
-        } else if(item.category == "Starbucks"){
+        } else if (item.category == "Starbucks") {
             return R.drawable.ic_starbucks
         }
-        return  R.drawable.seaching
+        return R.drawable.seaching
     }
 }

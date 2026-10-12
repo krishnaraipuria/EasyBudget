@@ -30,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,137 +56,167 @@ import viewmodel.AddTranviewmodel
 import viewmodel.AddTranviewmodelFactory
 
 @Composable
-fun AddTran(navController: NavController){
+fun AddTran(navController: NavController) {
     val viewModel = AddTranviewmodelFactory(LocalContext.current).create(AddTranviewmodel::class.java)
     val coroutineScope = rememberCoroutineScope()
-    Surface(modifier= Modifier.fillMaxSize()) {
+    Surface(modifier = Modifier.fillMaxSize()) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-            val (nameRow, list, card, topBar) = createRefs()
+            val (nameRow, card, topBar) = createRefs()
             Image(
                 painter = painterResource(id = R.drawable.rectangle_9),
-                null,
+                contentDescription = null,
                 modifier = Modifier.constrainAs(topBar) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                })
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top=60.dp, start = 16.dp, end = 16.dp)
-                .constrainAs(nameRow){
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }){
-
-                Image(painter = painterResource(R.drawable.back), contentDescription = null
-                    , modifier = Modifier.align(Alignment.CenterStart))
+                },
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 60.dp, start = 16.dp, end = 16.dp)
+                    .constrainAs(nameRow) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.back),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .clickable { navController.popBackStack() },
+                )
                 ExpenseTestView(
                     text = "Add Expense",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
-                    modifier = Modifier.padding(16.dp).align(Alignment.Center)
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.Center),
                 )
-                Image(painter = painterResource(R.drawable.dot1), contentDescription = null
-                , modifier = Modifier.align(Alignment.CenterEnd))
+                Image(
+                    painter = painterResource(R.drawable.dot1),
+                    contentDescription = null,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                )
             }
-            Forms(modifier = Modifier.padding(top = 60.dp).constrainAs(card){
-                top.linkTo(nameRow.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },onAddExpenseClick = {
+            Forms(
+                modifier = Modifier
+                    .padding(top = 60.dp)
+                    .constrainAs(card) {
+                        top.linkTo(nameRow.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+            ) { expense ->
                 coroutineScope.launch {
-                   if(viewModel.addExpense(it)){
-                       navController.popBackStack()
-                   }
+                    if (viewModel.addExpense(expense)) {
+                        navController.popBackStack()
+                    }
                 }
-            }  )
+            }
         }
     }
 }
+
 @Composable
-fun Forms(modifier: Modifier, onAddExpenseClick:(model: ExpenseEntity )-> Unit ){
-    val name = remember {
-        mutableStateOf("")
-    }
-    val amount = remember {
-        mutableStateOf("")
-    }
-    val date = remember {
-        mutableStateOf(0L)
-    }
-    val dateDialogVisibility = remember {
-        mutableStateOf(false)
-    }
-    val category= remember {
-        mutableStateOf("Groceries")
-    }
-    val type= remember {
-        mutableStateOf("Expense")
-    }
-    Column(modifier = modifier
-        .padding(16.dp)
-        .fillMaxWidth()
-        .shadow(16.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.surface)
-        .padding(16.dp)
-        .verticalScroll(rememberScrollState()))
-    {
+fun Forms(modifier: Modifier, onAddExpenseClick: (model: ExpenseEntity) -> Unit) {
+    val name = remember { mutableStateOf("") }
+    val amount = remember { mutableStateOf("") }
+    val date = remember { mutableLongStateOf(0L) }
+    val dateDialogVisibility = remember { mutableStateOf(value = false) }
+    val category = remember { mutableStateOf("Groceries") }
+    val type = remember { mutableStateOf("Expense") }
+
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .shadow(16.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+    ) {
         ExpenseTestView(text = "Name", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        OutlinedTextField(value = name.value, onValueChange = {
-            name.value = it
-        }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = name.value,
+            onValueChange = { name.value = it },
+            modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(modifier = Modifier.size(8.dp))
-
 
         ExpenseTestView(text = "Amount", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        OutlinedTextField(value = amount.value, onValueChange = {
-            amount.value = it
-        }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = amount.value,
+            onValueChange = { amount.value = it },
+            modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(modifier = Modifier.size(8.dp))
 
         ExpenseTestView(text = "Date", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        OutlinedTextField(value = if(date.value==0L)"" else Utils.formatLongToReadable(date.value), onValueChange = {
-            {}
-        }, modifier = Modifier.fillMaxWidth().clickable{dateDialogVisibility.value=true}, enabled = false, colors = OutlinedTextFieldDefaults.colors(
-            disabledBorderColor = MaterialTheme.colorScheme.outline,
-            disabledTextColor = MaterialTheme.colorScheme.onSurface
-        ))
+        OutlinedTextField(
+            value = if (date.longValue == 0L) "" else Utils.formatLongToReadable(date.longValue),
+            onValueChange = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { dateDialogVisibility.value = true },
+            enabled = false,
+            colors = OutlinedTextFieldDefaults.colors(
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+            ),
+        )
         Spacer(modifier = Modifier.size(8.dp))
-
 
         ExpenseTestView(text = "Category", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        ExpenseDropDown(listOf("Groceries","Spotify","Mobile recharge / Internet","Salary","Refunds"), onItemSelect = {category.value=it})
+        ExpenseDropDown(
+            listofitems = listOf("Groceries", "Spotify", "Mobile recharge / Internet", "Salary", "Refunds"),
+        ) { category.value = it }
         Spacer(modifier = Modifier.size(8.dp))
 
         ExpenseTestView(text = "Type", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        ExpenseDropDown(listOf("Expense","Income"), onItemSelect = {type.value=it})
+        ExpenseDropDown(
+            listofitems = listOf("Expense", "Income"),
+        ) { type.value = it }
         Spacer(modifier = Modifier.size(8.dp))
 
-        Button(onClick = {
-            val model = ExpenseEntity(
-                null,name.value,amount.value.toDoubleOrNull()?:0.0, date.value,category.value,type.value
-            )
-            onAddExpenseClick(model)
-        },
+        Button(
+            onClick = {
+                val model = ExpenseEntity(
+                    id = null,
+                    title = name.value,
+                    amount = amount.value.toDoubleOrNull() ?: 0.0,
+                    date = date.longValue,
+                    category = category.value,
+                    type = type.value,
+                )
+                onAddExpenseClick(model)
+            },
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .fillMaxWidth()){
+                .fillMaxWidth(),
+        ) {
             ExpenseTestView(text = "Add Expense", fontSize = 14.sp, color = Color.White)
         }
     }
-    if(dateDialogVisibility.value){
-    Expensedatepart(onDateChange = {date.value=it
-                                   dateDialogVisibility.value=false}, onDismiss = {
-        dateDialogVisibility.value=false
-    })
+    if (dateDialogVisibility.value) {
+        Expensedatepart(
+            onDateChange = {
+                date.longValue = it
+                dateDialogVisibility.value = false
+            },
+        ) {
+            dateDialogVisibility.value = false
+        }
     }
 }
 
@@ -193,53 +224,61 @@ fun Forms(modifier: Modifier, onAddExpenseClick:(model: ExpenseEntity )-> Unit )
 @Composable
 fun Expensedatepart(
     onDateChange: (date: Long) -> Unit,
-    onDismiss: () -> Unit
-){
+    onDismiss: () -> Unit,
+) {
     val datePicker = rememberDatePickerState()
     val selectedDate = datePicker.selectedDateMillis ?: 0L
-    DatePickerDialog({onDismiss()},
-        { TextButton(onClick = {onDateChange(selectedDate)}){
-            ExpenseTestView(text = "OK")
-        }
+    DatePickerDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = { onDateChange(selectedDate) }) {
+                ExpenseTestView(text = "OK")
+            }
         },
         dismissButton = {
-            TextButton(onClick = {onDateChange(selectedDate)}) {
+            TextButton(onClick = { onDismiss() }) {
                 ExpenseTestView(text = "Cancel")
             }
-        }
-        ) {
+        },
+    ) {
         DatePicker(state = datePicker)
-
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpenseDropDown(listofitems: List<String>, onItemSelect: (item:String) -> Unit){
-    val expanded = remember {
-        mutableStateOf(false)
-    }
-    val selectedItem = remember {
-        mutableStateOf<String>(listofitems[0])
-    }
-    ExposedDropdownMenuBox(expanded= expanded.value, onExpandedChange = {expanded.value=it}) {
-        TextField(value = selectedItem.value, onValueChange = {}, readOnly = true,
-            modifier = Modifier.fillMaxWidth().menuAnchor(type= MenuAnchorType.PrimaryEditable, enabled=true),
+fun ExpenseDropDown(listofitems: List<String>, onItemSelect: (item: String) -> Unit) {
+    val expanded = remember { mutableStateOf(value = false) }
+    val selectedItem = remember { mutableStateOf(listofitems[0]) }
+    ExposedDropdownMenuBox(expanded = expanded.value, onExpandedChange = { expanded.value = it }) {
+        TextField(
+            value = selectedItem.value,
+            onValueChange = {},
+            readOnly = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true),
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value)
-            }
-            )
-        ExposedDropdownMenu(expanded =expanded.value, onDismissRequest = {}) {
-            listofitems.forEach {
-                DropdownMenuItem(text = {Text(text = it)}, onClick = {selectedItem.value=it
-                    onItemSelect(selectedItem.value)
-                expanded.value=false
-                })
+            },
+        )
+        ExposedDropdownMenu(expanded = expanded.value, onDismissRequest = {}) {
+            listofitems.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(text = item) },
+                    onClick = {
+                        selectedItem.value = item
+                        onItemSelect(selectedItem.value)
+                        expanded.value = false
+                    },
+                )
             }
         }
     }
 }
+
 @Composable
 @Preview(showBackground = true)
-fun AddTranPreview(){
+fun AddTranPreview() {
     AddTran(rememberNavController())
 }
