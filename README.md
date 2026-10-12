@@ -1,57 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-</head>
-<body>
+# EasyBudget – AI-Powered Expense Tracker
 
-<div class="container">
+EasyBudget is a privacy-first Android expense tracker that combines expense management, financial analytics, and an AI Financial Assistant powered by FastAPI, LangGraph, and Groq LLMs.
 
-  <h1>💰 EasyBudget – Expense Tracker App</h1>
-  <p>
-    EasyBudget is a modern Android application designed to help users track and manage their daily expenses efficiently.
-    It provides a clean UI, smooth performance, and insightful analytics to improve financial awareness.
-  </p>
+## Tech Stack
 
-  <h2>🚀 Features</h2>
-  <ul>
-    <li>Add, edit, and delete expenses easily</li>
-    <li>Track expenses by date</li>
-    <li>Categorize expenses (Food, Travel, Bills, etc.)</li>
-    <li>Visual insights with charts and summaries</li>
-    <li>Offline support using local database</li>
-    <li>Clean and responsive UI built with Jetpack Compose</li>
-  </ul>
+**Android Application**
+- Kotlin
+- Jetpack Compose
+- MVVM Architecture
+- Room Database (SQLite)
+- Retrofit and Kotlin Coroutines
 
-  <h2>🛠️ Tech Stack</h2>
-  <ul>
-    <li><strong>Language:</strong> Kotlin</li>
-    <li><strong>UI:</strong> Jetpack Compose</li>
-    <li><strong>Architecture:</strong> MVVM</li>
-    <li><strong>Database:</strong> Room (SQLite)</li>
-  </ul>
+**AI Backend**
+- Python and FastAPI
+- LangGraph
+- Groq LLM integration
+- Tavily Web Search API
 
-  <h2>🧠 What I Learned</h2>
-  <ul>
-    <li>Building scalable Android apps using MVVM architecture</li>
-    <li>Managing local data efficiently with Room Database</li>
-    <li>Designing modern UI with Jetpack Compose</li>
-  </ul>
+## Project Structure
 
-  <h2>📌 Future Improvements</h2>
-  <ul>
-    <li>Expense reminders</li>
-    <li>Cloud sync (Firebase)</li>
-    <li>Advanced analytics</li>
-    <li>User authentication</li>
-  </ul>
+**Android Application**
+- UI and screen management
+- ViewModels and business logic
+- Repository and data management
+- Room SQLite local database
+- AI Assistant API integration
 
-  <div class="footer">
-    ⭐ If you like this project, give it a star!
-  </div>
+**AI Backend**
+- FastAPI REST endpoints: `/chat` and `/chat/sql_result`
+- LangGraph agent workflow
+- Groq LLM integration
+- SQL query generation and result processing
 
-</div>
+## Engineering Highlights
 
-</body>
-</html>
+- **Privacy-First AI Architecture:** Financial records remain in the local Room database, while the AI backend generates SQL queries for on-device execution.
+- **Offline Fallback:** A local SQLite query engine supports eligible queries when the AI backend is unavailable.
+- **AI-Powered Financial Insights:** Natural-language questions are processed through a FastAPI and LangGraph workflow.
+- **Reactive Data Management:** Kotlin Flow and Jetpack Compose keep the UI synchronized with database changes.
+
+## Future Improvements
+
+- Custom budget limits and spending alerts
+- Encrypted cloud synchronization
+- Voice-based transaction entry
