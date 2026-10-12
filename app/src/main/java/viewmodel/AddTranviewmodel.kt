@@ -8,18 +8,19 @@ import data.dao.ExpenseDao
 import data.modal.ExpenseEntity
 
 class AddTranviewmodel(val dao: ExpenseDao) : ViewModel() {
-    suspend fun addExpense(expenseEntity: ExpenseEntity): Boolean{
-        return try{
+    suspend fun addExpense(expenseEntity: ExpenseEntity): Boolean {
+        return try {
             dao.insertExpense(expenseEntity)
             true
-        }catch (ex: Throwable){
-            return false;
+        } catch (_: Throwable) {
+            false
         }
     }
 }
-class AddTranviewmodelFactory(private val context: Context): ViewModelProvider.Factory{
-    override fun <T: ViewModel> create(modelClass: Class<T>): T{
-        if(modelClass.isAssignableFrom(AddTranviewmodel::class.java)){
+
+class AddTranviewmodelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AddTranviewmodel::class.java)) {
             val dao = ExpenseDataBase.getDatabase(context).ExpenseDao()
             @Suppress("UNCHECKED_CAST")
             return AddTranviewmodel(dao) as T

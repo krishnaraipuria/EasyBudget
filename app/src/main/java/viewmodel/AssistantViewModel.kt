@@ -1,45 +1,67 @@
 package viewmodel
 
 import android.content.Context
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import data.ExpenseDataBase
+import data.files.AssistantClient
+import data.files.AssistantRepository
 import kotlinx.coroutines.launch
 
 data class Message(
     val content: String,
     val isUser: Boolean,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
 )
 
-class AssistantViewModel : ViewModel() {
+class AssistantViewModel(
+    private val repository: AssistantRepository,
+) : ViewModel() {
     private val _messages = mutableStateListOf<Message>()
     val messages: List<Message> get() = _messages
 
+    var isLoading by mutableStateOf(value = false)
+        private set
+
     init {
-        _messages.add(Message("Hello! I'm your AI financial assistant. How can I help you today?", false))
+        _messages.add(
+            Message(
+                content = "Hello! I'm your AI financial assistant. Ask me anything about your balance, expenses, or income!",
+                isUser = false,
+            ),
+        )
     }
 
     fun sendMessage(text: String) {
-        if (text.isBlank()) return
-        
-        _messages.add(Message(text, true))
-        
-        viewModelScope.launch {
-            // just for now:)
-            delay(1000)
-            val response = generateMockResponse(text)
-            _messages.add(Message(response, false))
-        }
-    }
+        val trimmed = text.trim()
+        if (trimmed.isBlank() || isLoading) return
 
-    private fun generateMockResponse(query: String): String {
-        return when {
-            query.contains("balance", ignoreCase = true) -> "Your current balance is ₹ 5,420.00."
-            query.contains("spend", ignoreCase = true) -> "You spent ₹ 1,200.00 on Groceries this week."
-            else -> "I'm analyzing your spending patterns. Could you please provide more details?"
+        _messages.add(Message(trimmed, isUser = true))
+        isLoading = true
+
+        viewModelScope.launch {
+            try {
+                val resp = repository.ask(trimmed)
+                var answerText = resp.answer
+                if (answerText.isNullOrBlank()) {
+                    answerText = "I couldn't process your question right now. Please try again."
+                }
+                if (!resp.sources.isNullOrEmpty()) {
+                    answerText += "\n\nSources:\n" + resp.sources.joinToString("\n") { "• $it" }
+                }
+                _messages.add(Message(answerText, isUser = false))
+            } catch (e: Exception) {
+                _messages.add(
+                    Message(content = "An error occurred: ${e.message ?: "Unknown error"}", isUser = false),
+                )
+            } finally {
+                isLoading = false
+            }
         }
     }
 }
@@ -47,8 +69,11 @@ class AssistantViewModel : ViewModel() {
 class AssistantViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AssistantViewModel::class.java)) {
+            val db = ExpenseDataBase.getDatabase(context.applicationContext)
+            val api = AssistantClient.createApi()
+            val repo = AssistantRepository(api, db)
             @Suppress("UNCHECKED_CAST")
-            return AssistantViewModel() as T
+            return AssistantViewModel(repo) as T
         }
         throw IllegalArgumentException("Unknown ViewModel Class")
     }

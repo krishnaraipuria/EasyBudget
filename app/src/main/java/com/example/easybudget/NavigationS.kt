@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
@@ -14,35 +13,36 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.easybudget.ui.theme.AIS
 
 @Composable
 fun NavHostS() {
     val navController = rememberNavController()
     var bottomBarVisibility by remember {
-       mutableStateOf(true)
+        mutableStateOf(value = true)
     }
-    Scaffold(bottomBar = {
-        AnimatedVisibility(visible = bottomBarVisibility) {
-            NavBottomBar(
-                navController = navController,
-                items = listOf(
-                    NaviItem(route = "homes", icon = R.drawable.homeicon),
-                    NaviItem(route = "stats", icon = R.drawable.bar_chart_fill_1)
+    Scaffold(
+        bottomBar = {
+            AnimatedVisibility(visible = bottomBarVisibility) {
+                NavBottomBar(
+                    navController = navController,
+                    items = listOf(
+                        NaviItem(route = "homes", icon = R.drawable.homeicon),
+                        NaviItem(route = "stats", icon = R.drawable.bar_chart_fill_1),
+                    ),
                 )
-            )
-        }
-    }) {
-
-
-        NavHost(navController = navController, startDestination = "homes", modifier = Modifier.padding(it)) {
+            }
+        },
+    ) { innerPadding ->
+        NavHost(navController = navController, startDestination = "homes", modifier = Modifier.padding(innerPadding)) {
             composable(route = "homes") {
                 bottomBarVisibility = true
                 HomeS(navController)
@@ -55,9 +55,19 @@ fun NavHostS() {
                 bottomBarVisibility = true
                 StatsS(navController)
             }
-            composable(route = "assistant") {
+            composable(
+                route = "assistant?initialQuestion={initialQuestion}",
+                arguments = listOf(
+                    navArgument("initialQuestion") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                ),
+            ) { backStackEntry ->
                 bottomBarVisibility = false
-                AIS(navController)
+                val initialQuestion = backStackEntry.arguments?.getString("initialQuestion")
+                AIS(navController, initialQuestion = initialQuestion)
             }
         }
     }
@@ -70,7 +80,7 @@ data class NaviItem(
 
 @Composable
 fun NavBottomBar(navController: NavController, items: List<NaviItem>) {
-    val navBackStackEntry=navController.currentBackStackEntryAsState()
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     BottomAppBar {
@@ -92,9 +102,9 @@ fun NavBottomBar(navController: NavController, items: List<NaviItem>) {
                 alwaysShowLabel = false,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
         }
-        }
     }
+}
